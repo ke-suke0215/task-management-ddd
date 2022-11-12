@@ -1,0 +1,178 @@
+openapi: 3.0.0
+info:
+  title: タスク管理
+  description: タスク管理ツールをドメイン駆動設計をベースに作成する
+  version: 0.0.0
+servers:
+  - url: http://{host}:{port}/api/
+    description: 開発用
+    variables:
+      host:
+        default: localhost
+      port:
+        default: "8080"
+paths:
+  /task/getAll:
+    get:
+      tags:
+        - task
+      summary: 全てのタスクを取得する
+      description: 全てのタスクを取得する。
+      operationId: getAllTask
+      responses:
+        "200":
+          description: 全てのタスクを正常に取得しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+        "400":
+          description: リクエストが正しくない。
+        "404":
+          description: ページが見つからない。
+  /task/create:
+    post:
+      tags:
+        - task
+      summary: 新規タスクの作成
+      description: 新規タスクを作成する。
+      operationId: createTask
+      parameters:
+        - name: name
+          in: query
+          description: タスク名
+          required: true
+          schema:
+            type: string
+        - name: deadline
+          in: query
+          description: 期日（形式：yyyy-MM-dd）
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: タスクの追加完了。
+        "400":
+          description: リクエストが正しくない。
+  /task/updateName/{taskId}:
+    put:
+      tags:
+        - task
+      summary: タスク名を変更
+      description: タスク名を変更する。
+      operationId: updateTaskName
+      parameters:
+        - name: id
+          in: path
+          description: タスクID
+          required: true
+          schema:
+            type: integer
+        - name: name
+          in: query
+          description: タスク名
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: タスク名を正常に変更。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: リクエストが正しくない。
+  /task/updateDeadLine/{taskId}:
+    put:
+      tags:
+        - task
+      summary: タスクの期日を変更
+      description: タスクの期日を変更する。
+      operationId: updateTaskDeadline
+      parameters:
+        - name: id
+          in: path
+          description: タスクID
+          required: true
+          schema:
+            type: integer
+        - name: deadline
+          in: query
+          description: タスクの期日（形式：yyyy-MM-dd）
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: タスクの期日を正常に変更。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: リクエストが正しくない。
+  /task/updateStatus/{taskId}:
+    put:
+      tags:
+        - task
+      summary: タスクのステータスを変更
+      description: タスクのステータスを変更する。
+      operationId: updateTaskStatus
+      parameters:
+        - name: id
+          in: path
+          description: タスクID
+          required: true
+          schema:
+            type: integer
+        - name: status
+          in: query
+          description: タスクのステータス
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: タスクのステータスを正常に変更。
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "400":
+          description: リクエストが正しくない。
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: タスクID
+          example: 1
+        name:
+          type: string
+          description: タスク名
+          example: 資料作成
+        status:
+          type: integer
+          description: タスクステータス
+          example: 0
+          enum:
+            - 0 # 未着手
+            - 1 # 作業中
+            - 2 # 完了
+        deadline:
+          type: string
+          description: 締め切り日（形式：yyyy-MM-dd）
+          example: "2022-01-01"
+        updatedDeadlineCount:
+          type: integer
+          example: 1
+        createdDateTime:
+          type: string
+          description: 締め切り日（形式：yyyy-MM-dd hh:mm）
+          example: "2022-01-01 23:01"
